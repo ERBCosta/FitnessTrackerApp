@@ -2,6 +2,7 @@ package co.tiagoaguiar.fitnesstracker
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -24,19 +25,24 @@ class ImcActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.fields_message, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            //aqui sucesso
+
+            val weight = editWeight.text.toString().toInt()
+            val height = editHeight.text.toString().toInt()
+
+            val result = calculateImc(weight, height)
+            Log.d("Teste", "Resultado: $result")
         }
 
+    }
+
+    private fun calculateImc(weight: Int, height: Int): Double{
+        //peso / (altura * altura)
+        return weight / ((height / 100.0) * (height / 100.0))
     }
 
     private fun validate(): Boolean {
         //não pode inserir valores nulos/vazio
         //não pode começar com número 0
-
-        //true && true   = true
-        //true && false  = false
-        //false && true  = false
-        //false && false = false
 
         return (editWeight.text.toString().isNotEmpty()
                 && editHeight.text.toString().isNotEmpty()
