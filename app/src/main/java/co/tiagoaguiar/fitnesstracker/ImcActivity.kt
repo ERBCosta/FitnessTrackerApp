@@ -1,5 +1,6 @@
 package co.tiagoaguiar.fitnesstracker
 
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 
 class ImcActivity : AppCompatActivity() {
 
@@ -22,7 +24,7 @@ class ImcActivity : AppCompatActivity() {
 
         val btnSend: Button = findViewById(R.id.btn_imc_send)
         btnSend.setOnClickListener {
-            if(!validate()) {
+            if (!validate()) {
                 Toast.makeText(this, R.string.fields_message, Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -33,8 +35,21 @@ class ImcActivity : AppCompatActivity() {
             val result = calculateImc(weight, height)
             Log.d("Teste", "Resultado: $result")
 
-            val imcReponseId = imcResponse(result)
-            Toast.makeText(this, imcReponseId, Toast.LENGTH_SHORT).show()
+            val imcResponseId = imcResponse(result)
+
+            val dialog = AlertDialog.Builder(this)
+                .setTitle(getString(R.string.imc_response, result))
+                .setMessage(imcResponseId)
+                .setPositiveButton(android.R.string.ok) { dialog, which -> //opção 2: utilizando lambda
+                }
+                .create()
+                .show()
+            //opção 1: mais trabalho para escrever
+//               .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
+//                   override fun onClick(dialog: DialogInterface?, wich: Int) {
+//                        //aqui roda depois do click
+//                    }
+//                })
         }
 
     }
@@ -42,38 +57,38 @@ class ImcActivity : AppCompatActivity() {
     @StringRes
     private fun imcResponse(imc: Double): Int {
         return when {
-            imc <15.0 -> R.string.imc_severely_low_weight
-            imc <16.0 -> R.string.imc_very_low_weight
-            imc <18.5 -> R.string.imc_low_weight
-            imc <25.0 -> R.string.normal
-            imc <30.0 -> R.string.imc_high_weight
-            imc <35.0 -> R.string.imc_so_high_weight
-            imc <40.0 -> R.string.imc_severely_high_weight
+            imc < 15.0 -> R.string.imc_severely_low_weight
+            imc < 16.0 -> R.string.imc_very_low_weight
+            imc < 18.5 -> R.string.imc_low_weight
+            imc < 25.0 -> R.string.normal
+            imc < 30.0 -> R.string.imc_high_weight
+            imc < 35.0 -> R.string.imc_so_high_weight
+            imc < 40.0 -> R.string.imc_severely_high_weight
             else -> R.string.imc_extreme_weight
         }
-       /* if(imc < 15.0) {
-            return R.string.imc_severely_low_weight
-        }
-        else if (imc <16.0){
-            return R.string.imc_very_low_weight
-        } else if(imc < 18.5) {
-            return R.string.imc_low_weight
-        } else if (imc <25.0) {
-            return R.string.normal
-        } else if(imc <30.0) {
-            return R.string.imc_high_weight
-        } else if(imc <35.0) {
-            return R.string.imc_so_high_weight
-        } else if(imc < 40.0) {
-            return R.string.imc_severely_high_weight
-        } else {
-            return R.string.imc_extreme_weight
-        }
+        /* if(imc < 15.0) {
+             return R.string.imc_severely_low_weight
+         }
+         else if (imc <16.0){
+             return R.string.imc_very_low_weight
+         } else if(imc < 18.5) {
+             return R.string.imc_low_weight
+         } else if (imc <25.0) {
+             return R.string.normal
+         } else if(imc <30.0) {
+             return R.string.imc_high_weight
+         } else if(imc <35.0) {
+             return R.string.imc_so_high_weight
+         } else if(imc < 40.0) {
+             return R.string.imc_severely_high_weight
+         } else {
+             return R.string.imc_extreme_weight
+         }
 
-        */
+         */
     }
 
-    private fun calculateImc(weight: Int, height: Int): Double{
+    private fun calculateImc(weight: Int, height: Int): Double {
         //peso / (altura * altura)
         return weight / ((height / 100.0) * (height / 100.0))
     }
