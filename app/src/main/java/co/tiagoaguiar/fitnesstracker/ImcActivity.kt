@@ -1,9 +1,11 @@
 package co.tiagoaguiar.fitnesstracker
 
+import android.content.Context
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -37,13 +39,17 @@ class ImcActivity : AppCompatActivity() {
 
             val imcResponseId = imcResponse(result)
 
-            val dialog = AlertDialog.Builder(this)
+            AlertDialog.Builder(this)
                 .setTitle(getString(R.string.imc_response, result))
                 .setMessage(imcResponseId)
                 .setPositiveButton(android.R.string.ok) { dialog, which -> //opção 2: utilizando lambda
                 }
                 .create()
                 .show()
+
+            //service é utilizado para manipular recursos dos serviços android no caso abaixo é utilizado para manipular o teclado (input)
+            val service = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            service.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
             //opção 1: mais trabalho para escrever
 //               .setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
 //                   override fun onClick(dialog: DialogInterface?, wich: Int) {
