@@ -109,3 +109,7 @@ class ImcActivity : AppCompatActivity() {
                 && !editHeight.text.toString().startsWith("0"))
     }
 }
+
+//Listas possibilitam os aplicativos mais dinâmicos e maiores
+//90% dos app possuem recursos de coleções de dados
+//coleção de dados: itens que se repetem mas que recebem dados de formas dinâmicas
