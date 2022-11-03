@@ -1,14 +1,17 @@
 package co.tiagoaguiar.fitnesstracker
 
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -29,23 +32,53 @@ class MainActivity : AppCompatActivity() {
                 textStringId = R.string.label_imc,
                 color = Color.GREEN
             )
-            )
+        )
         mainItems.add(
             MainItem(
-            id= 2,
-            drawableId = R.drawable.ic_baseline_visibility_24,
-            textStringId = R.string.label_tmb,
-            color = Color.BLUE
+                id = 2,
+                drawableId = R.drawable.ic_baseline_visibility_24,
+                textStringId = R.string.label_tmb,
+                color = Color.BLUE
             )
         )
 
         //Passo1 para recycler view: Criar o layout xml (main_item.xml)
         //2: onde o recyclerview vai aparecer (tela principal, tela cheia)
         //3: lógica - conectar o xml da celula DENTRO do recyclerView + a sua qtde de elementos dinâmicos
-        val adapter = MainAdapter(mainItems)
+
+//        val adapter = MainAdapter(mainItems, object : OnItemClickListener {
+//            //METODO 2: IMPLEMENTANDO VIA OBJETO ANONIMO
+//            override fun onClick(id: Int) {
+//                when (id) {
+//                    1 -> {
+//                        val intent = Intent(this@MainActivity, ImcActivity::class.java)
+//                        startActivity(intent)
+//                    }
+//                    2 -> {
+//                        // abrir uma outra activity
+//                    }
+//                }
+//                Log.i("Teste", "Clicou $id")
+//            }
+//        })
+
+        val adapter = MainAdapter(mainItems) { id ->
+            //METODO 3: IMPLEMENTANDO VIA FUNCTIONS
+            when (id) {
+                1 -> {
+                    val intent = Intent(this@MainActivity, ImcActivity::class.java)
+                    startActivity(intent)
+                }
+                2 -> {
+                    // abrir uma outra activity
+                }
+            }
+            Log.i("Teste", "Clicou $id")
+        }
+
         rvMain = findViewById(R.id.rv_main)
         rvMain.adapter = adapter
-        rvMain.layoutManager = LinearLayoutManager(this)
+        rvMain.layoutManager = GridLayoutManager(this, 2)
 
         //classe para administrar a recyclerview e suas celulas (os seus layouts de itens) nome:
         //adapter ->
@@ -64,8 +97,25 @@ class MainActivity : AppCompatActivity() {
 //            startActivity(i)
 //        }
     }
+// METODO 1 USANDO IMPLEMENTACAO DE INTERFACE VIA ACTIVITY
+//    override fun onClick(id: Int) {
+//        when (id) {
+//            1 -> {
+//                val intent = Intent(this, ImcActivity::class.java)
+//                startActivity(intent)
+//            }
+//            2 -> {
+//                // abrir uma outra activity
+//            }
+//        }
+//        Log.i("Teste", "Clicou $id")
+//    }
 
-    private inner class MainAdapter(private val mainItems:List<MainItem>) : RecyclerView.Adapter<MainViewHolder>() {
+    private inner class MainAdapter(
+        private val mainItems: List<MainItem>,
+        // private val onItemClickListener: OnItemClickListener,
+        private val onItemClickListener: (Int) -> Unit,
+    ) : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
         //1 - Qual é o layout xml da celular específica (item)
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
@@ -85,18 +135,32 @@ class MainActivity : AppCompatActivity() {
             return mainItems.size
         }
 
-    }
+        //classe da célula em si!(é a célula que busca as referencias de cada botão)
+        private inner class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            fun bind(item: MainItem) {
+                val img: ImageView = itemView.findViewById(R.id.item_img_icon)
+                val name: TextView = itemView.findViewById(R.id.item_txt_name)
+                val container: LinearLayout = itemView.findViewById(R.id.item_container_imc)
 
-    //classe da célula em si!(é a célula que busca as referencias de cada botão)
-    private class MainViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(item: MainItem) {
-            val img: ImageView = itemView.findViewById(R.id.item_img_icon)
-            val name: TextView = itemView.findViewById(R.id.item_txt_name)
-            val container: LinearLayout = itemView as LinearLayout
+                img.setImageResource(item.drawableId)
+                name.setText(item.textStringId)
+                container.setBackgroundColor(item.color)
 
-            img.setImageResource(item.drawableId)
-            name.setText(item.textStringId)
-            container.setBackgroundColor(item.color)
+                container.setOnClickListener {
+                    //aqui é uma função
+                    onItemClickListener.invoke(item.id)
+                    //aqui é um ref. interface
+                    //onItemClickListener.onClick(item.id)
+
+                }
+            }
         }
+
     }
+
+
+    // 3 maneiras de escutar eventos de click usando celulas (viewholder) activities
+    // 1 - implementação de interface
+    // 2 - objetos anonimos
+    //3 - funcional
 }
